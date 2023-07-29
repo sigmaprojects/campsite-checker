@@ -1,27 +1,23 @@
-FROM node
-LABEL authors="Don Quist"
-# update dependencies and install curl
-RUN apt-get update && apt-get install -y \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-# Create app directory
-WORKDIR /app
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-# COPY package*.json ./ \
-#     ./source ./
+FROM node:18
 
-# This will copy everything from the source path 
-# --more of a convenience when testing locally.
-COPY . .
-# update each dependency in package.json to the latest version
-RUN npm install -g npm-check-updates \
-    ncu -u \
-    npm install
-# If you are building your code for production
-RUN npm ci --only=production
-# Bundle app source
+# We don't need the standalone Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+# Install Google Chrome Stable and fonts
+# Note: this installs the necessary libs to make the browser work with Puppeteer.
+RUN apt-get update && apt-get install gnupg wget iputils-ping -y && \
+  wget --quiet --output-document=- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg && \
+  sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
+  apt-get update && \
+  apt-get install google-chrome-stable -y --no-install-recommends && \
+  rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
 COPY . /app
-# 
-CMD [ "node", "app.js" ]
+
+RUN npm install
+RUN npm ci
+
+COPY ./docker-entrypoint.sh /
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD [ "node", "/app/app.js" ]

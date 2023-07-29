@@ -1,3 +1,4 @@
+console.log("HELLO WORLD");
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 const puppeteer = require('puppeteer');
@@ -38,15 +39,37 @@ function getDateAsString(date) {
     return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 }
 
+async function pingtest() {
+    var exec = require('child_process').exec;
+    exec("ping -c 3 google.com", function (err, stdout, stderr) {
+        console.log('err ping result',err);
+        console.log('stdout ping result',stdout);
+        console.log('stderr ping result',stderr);
+    });
+}
+
 async function main() {
+
+    console.log("main executing...");
+
+    // await pingtest();
+
     const browser = await puppeteer.launch({
-        headless: 'new'
+        executablePath: '/usr/bin/google-chrome',
+        headless: 'new',
+        args:['--no-sandbox','--disable-dev-shm-usage'],
+        timeout: 30000
+    });
+    browser.on('disconnected', async () => {
+        console.log('disconnected!');
+        console.log(this);
     });
     
     const page = await browser.newPage();
 
     await page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4182.0 Safari/537.36");
-    await page.goto('https://reservations.sbparks.org/reservation/camping/index.asp',{waitUntil: 'networkidle0'});
+    console.log("opening https://reservations.sbparks.org/reservation/camping/index.asp");
+    await page.goto('https://reservations.sbparks.org/reservation/camping/index.asp');
 
     await page.click('button.ui-dialog-titlebar-close'); // close popup
 
@@ -121,6 +144,8 @@ async function main() {
         
         //console.log('dates',dates);
 
+        console.log("going back...");
+        
         await page.goBack({waitUntil: 'networkidle0'});
         await page.waitForSelector('button[type=submit][name=item_idno]');
     }
