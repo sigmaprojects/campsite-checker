@@ -19,5 +19,6 @@ RUN npm install
 RUN npm ci
 
 COPY ./docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD [ "node", "/app/app.js" ]
