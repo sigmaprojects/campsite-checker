@@ -1,4 +1,5 @@
-console.log("HELLO WORLD");
+console.log('Executing Jalama Campsite Checker', new Date().toISOString());
+
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 const puppeteer = require('puppeteer');
@@ -57,12 +58,20 @@ async function main() {
     const browser = await puppeteer.launch({
         executablePath: '/usr/bin/google-chrome',
         headless: 'new',
-        args:['--no-sandbox','--disable-dev-shm-usage'],
+        args:[
+            '--no-sandbox',
+            '--disable-dev-shm-usage',
+            '--window-size=1920,1080'
+        ],
+        defaultViewport: {
+            width:1920,
+            height:1080
+        },
         timeout: 30000
     });
     browser.on('disconnected', async () => {
         console.log('disconnected!');
-        console.log(this);
+        //console.log(this);
     });
     
     const page = await browser.newPage();
@@ -103,9 +112,9 @@ async function main() {
         let dates = await page.evaluate('booked_array');
 
         let availableDates = [];
-        //let loopDay = todayDate;
+        
         let loopDay = new Date();
-        //loopDay.setHours(0,0,0,0); // the dates in the booked_dates array are all at midnight, so we need to set the time to midnight for the comparison to work
+        
         for (let y = 0; y <= daysToCheckInTheFuture; y++) {
             loopDay.setDate(loopDay.getDate() + 1);
             let checkDateString = loopDay.getFullYear() + '-' + (loopDay.getMonth() + 1) + '-' + loopDay.getDate();
@@ -141,15 +150,15 @@ async function main() {
             'available_dates': availableDates,
             'multi_day_spans': multiDaySpans
         };
-        
-        //console.log('dates',dates);
+
+        console.log( campsites[idNo] );
 
         console.log("going back...");
         
         await page.goBack({waitUntil: 'networkidle0'});
         await page.waitForSelector('button[type=submit][name=item_idno]');
     }
-    //console.log('what');
+    
     console.log(campsites);
 
     const mailDetails = {
