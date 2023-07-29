@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "nodemailer": "^6.9.4",
+    "puppeteer": "^20.9.0"
+  },
+  "name": "campsite-checker",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sigmaprojects/campsite-checker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sigmaprojects/campsite-checker/issues"
+  },
+  "homepage": "https://github.com/sigmaprojects/campsite-checker#readme",
+  "description": ""
+}
