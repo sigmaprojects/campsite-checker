@@ -34,7 +34,7 @@ const siteIds = {
 
 let campsites = {};
 
-const daysToCheckInTheFuture = 230;
+const daysToCheckInTheFuture = 195;
 
 function getDateAsString(date) {
     return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
